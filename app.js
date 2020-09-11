@@ -5,8 +5,11 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
 var indexRouter = require("./routes/index");
-var courses = require("./routes/courses");
+var coursesRouter = require("./routes/courses");
 var cors = require("cors");
+
+// Port to listen on
+process.env.PORT = 3001;
 
 var app = express();
 
@@ -41,8 +44,8 @@ app.use(function(req, res, next) {
   res.locals.connection.connect();
   next();
 });
-app.use("/api/", indexRouter);
-app.use("/api/courses", coursesRouter);
+app.use("/courseapi/", indexRouter);
+app.use("/courseapi/courses", coursesRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
