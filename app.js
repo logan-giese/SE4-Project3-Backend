@@ -8,6 +8,9 @@ var indexRouter = require("./routes/index");
 var coursesRouter = require("./routes/courses");
 var cors = require("cors");
 
+// Database config file
+var config = require("./config/db.config");
+
 // Port to listen on
 process.env.PORT = 3001;
 
@@ -33,13 +36,13 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 var mysql = require("mysql");
-//Database connection
+// Database connection
 app.use(function(req, res, next) {
   res.locals.connection = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "courses"
+    host: config.host,
+    user: config.user,
+    password: config.password,
+    database: config.database
   });
   res.locals.connection.connect();
   next();
@@ -62,5 +65,8 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render("error");
 });
+
+// Start server listening
+app.listen(process.env.PORT);
 
 module.exports = app;
