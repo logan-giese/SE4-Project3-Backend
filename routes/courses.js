@@ -1,54 +1,31 @@
 var express = require("express");
 var router = express.Router();
 
-function validate(student) {
+function validate(course) {
   var errorMessage = "[";
 
-  if (student.idNumber == null || student.idNumber.length == 0) {
+  // TODO - replace this to validate courses
+  if (course.idNumber == null || course.idNumber.length == 0) {
     errorMessage +=
       '{"attributeName":"idNumber" , "message":"Must have idNumber"}';
   }
-  if (student.firstName == null || student.firstName.length == 0) {
+  if (course.firstName == null || course.firstName.length == 0) {
     if (errorMessage.length > 1) errorMessage += ",";
     errorMessage +=
       '{"attributeName":"firstName", "message":"Must have first name"}';
   }
-  if (student.lastName == null || student.lastName.length == 0) {
+  if (course.lastName == null || course.lastName.length == 0) {
     if (errorMessage.length > 1) errorMessage += ",";
     errorMessage +=
       '{"attributeName":"lastName" , "message":"Must have last name"}';
-  }
-  if (student.zip == null || student.zip.length == 0) {
-    if (errorMessage.length > 1) errorMessage += ",";
-    errorMessage += '{"attributeName":"zip" , "message":"Must have zip code"}';
-  }
-  if (student.city == null || student.city.length == 0) {
-    if (errorMessage.length > 1) errorMessage += ",";
-    errorMessage += '{"attributeName":"city" , "message":"Must have city"}';
-  }
-  if (student.state == null || student.state.length == 0) {
-    if (errorMessage.length > 1) errorMessage += ",";
-    errorMessage += '{"attributeName":"state" , "message":"Must have state"}';
-  }
-  if (student.email == null || student.email.length == 0) {
-    if (errorMessage.length > 1) errorMessage += ",";
-    errorMessage += '{"attributeName":"email" , "message":"Must have email"}';
-  }
-  if (student.classification == null || student.classification.length == 0) {
-    if (errorMessage.length > 1) errorMessage += ",";
-    errorMessage +=
-      '{"attributeName":"classification" , "message":"Must have classification"}';
-  }
-  if (student.gender == null || student.gender.length == 0) {
-    if (errorMessage.length > 1) errorMessage += ",";
-    errorMessage += '{"attributeName":"gender" , "message":"Must have gender"}';
   }
   errorMessage += "]";
   return errorMessage;
 }
 
-/* GET student listing. */
+/* GET the full course listing */
 router.get("/", function(req, res, next) {
+  // TODO - determine if offset and limit is necessary and if so how to implement in the frontend
   var offset;
   var limit;
   if (req.query.page == null) offset = 0;
@@ -56,7 +33,7 @@ router.get("/", function(req, res, next) {
   if (req.query.per_page == null) limit = 20;
   else limit = parseInt(req.query.per_page);
   res.locals.connection.query(
-    "SELECT * FROM student LIMIT ? OFFSET ?",
+    "SELECT * FROM course LIMIT ? OFFSET ?",
     [limit, offset],
     function(error, results, fields) {
       if (error) {
@@ -71,9 +48,11 @@ router.get("/", function(req, res, next) {
     }
   );
 });
+
+/* GET a specific course */
 router.get("/:id", function(req, res, next) {
   var id = req.params.id;
-  res.locals.connection.query("SELECT * FROM student WHERE id=?", id, function(
+  res.locals.connection.query("SELECT * FROM course WHERE id=?", id, function(
     error,
     results,
     fields
@@ -89,18 +68,20 @@ router.get("/:id", function(req, res, next) {
     }
   });
 });
+
+/* PUT an updated course in the database */
 router.put("/:id", function(req, res, next) {
   var id = req.params.id;
   console.log(req.body);
 
-  var student = req.body;
-  let errorMessage = validate(student);
+  var course = req.body;
+  let errorMessage = validate(course);
   if (errorMessage.length > 2) {
     res.status(406);
     res.send(errorMessage);
   } else {
     res.locals.connection.query(
-      "UPDATE student SET ? WHERE id=?",
+      "UPDATE course SET ? WHERE id=?",
       [req.body, id],
       function(error, results) {
         if (error) {
@@ -120,17 +101,19 @@ router.put("/:id", function(req, res, next) {
     );
   }
 });
+
+/* POST a new course in the database */
 router.post("/", function(req, res, next) {
   console.log(req.body);
 
-  var student = req.body;
-  let errorMessage = validate(student);
+  var course = req.body;
+  let errorMessage = validate(course);
   if (errorMessage.length > 2) {
     res.status(406);
     res.send(errorMessage);
   } else {
     res.locals.connection.query(
-      "INSERT INTO student SET ? ",
+      "INSERT INTO course SET ? ",
       req.body,
       function(error, results) {
         if (error) {
@@ -151,9 +134,10 @@ router.post("/", function(req, res, next) {
   }
 });
 
+/* DELETE a course */
 router.delete("/:id", function(req, res, next) {
   var id = req.params.id;
-  res.locals.connection.query("DELETE FROM student WHERE id=?", id, function(
+  res.locals.connection.query("DELETE FROM course WHERE id=?", id, function(
     error,
     results
   ) {
@@ -168,4 +152,5 @@ router.delete("/:id", function(req, res, next) {
     }
   });
 });
+
 module.exports = router;
