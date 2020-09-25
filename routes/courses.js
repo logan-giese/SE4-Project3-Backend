@@ -1,23 +1,28 @@
 var express = require("express");
 var router = express.Router();
 
+/* Validate a course object (used when creating a new course) */
 function validate(course) {
   var errorMessage = "[";
 
-  // TODO - replace this to validate courses
-  if (course.idNumber == null || course.idNumber.length == 0) {
-    errorMessage +=
-      '{"attributeName":"idNumber" , "message":"Must have idNumber"}';
+  if (course.id == null || course.id.length == 0) {
+    errorMessage += '{"attributeName":"id" , "message":"Must have id"}';
   }
-  if (course.firstName == null || course.firstName.length == 0) {
+  if (course.department == null || course.department.length == 0) {
     if (errorMessage.length > 1) errorMessage += ",";
-    errorMessage +=
-      '{"attributeName":"firstName", "message":"Must have first name"}';
+    errorMessage += '{"attributeName":"department", "message":"Must have department"}';
   }
-  if (course.lastName == null || course.lastName.length == 0) {
+  if (course.number == null || course.number.length == 0) {
     if (errorMessage.length > 1) errorMessage += ",";
-    errorMessage +=
-      '{"attributeName":"lastName" , "message":"Must have last name"}';
+    errorMessage += '{"attributeName":"number", "message":"Must have number"}';
+  }
+  if (course.name == null || course.name.length == 0) {
+    if (errorMessage.length > 1) errorMessage += ",";
+    errorMessage += '{"attributeName":"name", "message":"Must have name"}';
+  }
+  if (course.hours == null || course.hours.length == 0) {
+    if (errorMessage.length > 1) errorMessage += ",";
+    errorMessage += '{"attributeName":"hours", "message":"Must have hours"}';
   }
   errorMessage += "]";
   return errorMessage;
@@ -25,12 +30,11 @@ function validate(course) {
 
 /* GET the full course listing */
 router.get("/", function(req, res, next) {
-  // TODO - determine if offset and limit is necessary and if so how to implement in the frontend
   var offset;
   var limit;
   if (req.query.page == null) offset = 0;
   else offset = parseInt(req.query.page);
-  if (req.query.per_page == null) limit = 20;
+  if (req.query.per_page == null) limit = 50;
   else limit = parseInt(req.query.per_page);
   res.locals.connection.query(
     "SELECT * FROM course LIMIT ? OFFSET ?",
@@ -148,7 +152,7 @@ router.delete("/:id", function(req, res, next) {
     } else {
       res.status = 200;
       res.send(JSON.stringify({ status: 200, error: null, response: results }));
-      //If there is no error, all is good and response is 200OK.
+      //If there is no error, all is good and response is 200 OK
     }
   });
 });
