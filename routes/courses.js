@@ -5,9 +5,7 @@ var router = express.Router();
 function validate(course) {
   var errorMessage = "[";
 
-  if (course.id == null || course.id.length == 0) {
-    errorMessage += '{"attributeName":"id" , "message":"Must have id"}';
-  }
+  // Note: ID validation was removed because the database is set to auto-increment/auto-assign IDs
   if (course.department == null || course.department.length == 0) {
     if (errorMessage.length > 1) errorMessage += ",";
     errorMessage += '{"attributeName":"department", "message":"Must have department"}';
@@ -24,7 +22,21 @@ function validate(course) {
     if (errorMessage.length > 1) errorMessage += ",";
     errorMessage += '{"attributeName":"hours", "message":"Must have hours"}';
   }
+  if (course.level == null || course.level.length == 0) {
+      // If no course level, set it to the default
+      course.level = "0";
+  }
   errorMessage += "]";
+  return errorMessage;
+}
+
+/* Validate for an update request specifically (check for ID) */
+function validateForUpdate(course) {
+  var errorMessage = validate(course);
+  if (course.id == null || course.id.length == 0) {
+    errorMessage = errorMessage.substring(0, errorMessage.length-2);
+    errorMessage += '{"attributeName":"id", "message":"Must have course ID"}' + "]";
+  }
   return errorMessage;
 }
 
@@ -79,7 +91,7 @@ router.put("/:id", function(req, res, next) {
   console.log(req.body);
 
   var course = req.body;
-  let errorMessage = validate(course);
+  let errorMessage = validateForUpdate(course);
   if (errorMessage.length > 2) {
     res.status(406);
     res.send(errorMessage);
