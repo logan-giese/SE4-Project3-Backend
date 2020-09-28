@@ -5,9 +5,7 @@ var router = express.Router();
 function validate(course) {
   var errorMessage = "[";
 
-  if (course.id == null || course.id.length == 0) {
-    errorMessage += '{"attributeName":"id" , "message":"Must have id"}';
-  }
+  // Note: ID validation was removed because the database is set to auto-increment/auto-assign IDs
   if (course.department == null || course.department.length == 0) {
     if (errorMessage.length > 1) errorMessage += ",";
     errorMessage += '{"attributeName":"department", "message":"Must have department"}';
@@ -24,30 +22,60 @@ function validate(course) {
     if (errorMessage.length > 1) errorMessage += ",";
     errorMessage += '{"attributeName":"hours", "message":"Must have hours"}';
   }
+  if (course.level == null || course.level.length == 0) {
+      // If no course level, set it to the default
+      course.level = "0";
+  }
   errorMessage += "]";
+  return errorMessage;
+}
+
+/* Validate for an update request specifically (check for ID) */
+function validateForUpdate(course) {
+  var errorMessage = validate(course);
+  if (course.id == null || course.id.length == 0) {
+    errorMessage = errorMessage.substring(0, errorMessage.length-2);
+    errorMessage += '{"attributeName":"id", "message":"Must have course ID"}' + "]";
+  }
   return errorMessage;
 }
 
 /* GET the full course listing */
 router.get("/", function(req, res, next) {
+  // Get offset and limit from request url
   var offset;
   var limit;
   if (req.query.page == null) offset = 0;
   else offset = parseInt(req.query.page);
   if (req.query.per_page == null) limit = 50;
   else limit = parseInt(req.query.per_page);
+  
+  // Construct SQL query based on whether it's a search or not
+  var sqlQuery;
+  var sqlParams;
+  var search = "%"+req.query.search+"%"; // Add SQL wildcards
+  if (req.query.search == null) {
+    sqlQuery = "SELECT * FROM course LIMIT ? OFFSET ?";
+    sqlParams = [limit, offset];
+  }
+  else {
+    sqlQuery = "SELECT * FROM course WHERE number LIKE ? OR name LIKE ? LIMIT ? OFFSET ?";
+    sqlParams = [search, search, limit, offset];
+  }
+  
+  // Send the SQL query
   res.locals.connection.query(
-    "SELECT * FROM course LIMIT ? OFFSET ?",
-    [limit, offset],
+    sqlQuery,
+    sqlParams,
     function(error, results, fields) {
       if (error) {
         res.status(500);
         res.send(JSON.stringify({ status: 500, error: error, response: null }));
-        //If there is error, we send the error in the error section with 500 status
+        // If there is error, we send the error in the error section with 500 status
       } else {
         res.status(200);
         res.send(JSON.stringify(results));
-        //If there is no error, all is good and response is 200OK.
+        // If there is no error, all is good and response is 200OK.
       }
     }
   );
@@ -79,7 +107,7 @@ router.put("/:id", function(req, res, next) {
   console.log(req.body);
 
   var course = req.body;
-  let errorMessage = validate(course);
+  let errorMessage = validateForUpdate(course);
   if (errorMessage.length > 2) {
     res.status(406);
     res.send(errorMessage);
