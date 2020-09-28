@@ -42,24 +42,40 @@ function validateForUpdate(course) {
 
 /* GET the full course listing */
 router.get("/", function(req, res, next) {
+  // Get offset and limit from request url
   var offset;
   var limit;
   if (req.query.page == null) offset = 0;
   else offset = parseInt(req.query.page);
   if (req.query.per_page == null) limit = 50;
   else limit = parseInt(req.query.per_page);
+  
+  // Construct SQL query based on whether it's a search or not
+  var sqlQuery;
+  var sqlParams;
+  var search = "%"+req.query.search+"%"; // Add SQL wildcards
+  if (req.query.search == null) {
+    sqlQuery = "SELECT * FROM course LIMIT ? OFFSET ?";
+    sqlParams = [limit, offset];
+  }
+  else {
+    sqlQuery = "SELECT * FROM course WHERE number LIKE ? OR name LIKE ? LIMIT ? OFFSET ?";
+    sqlParams = [search, search, limit, offset];
+  }
+  
+  // Send the SQL query
   res.locals.connection.query(
-    "SELECT * FROM course LIMIT ? OFFSET ?",
-    [limit, offset],
+    sqlQuery,
+    sqlParams,
     function(error, results, fields) {
       if (error) {
         res.status(500);
         res.send(JSON.stringify({ status: 500, error: error, response: null }));
-        //If there is error, we send the error in the error section with 500 status
+        // If there is error, we send the error in the error section with 500 status
       } else {
         res.status(200);
         res.send(JSON.stringify(results));
-        //If there is no error, all is good and response is 200OK.
+        // If there is no error, all is good and response is 200OK.
       }
     }
   );
