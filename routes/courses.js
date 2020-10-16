@@ -35,7 +35,7 @@ function validateForUpdate(course) {
   var errorMessage = validate(course);
   if (course.id == null || course.id.length == 0) {
     errorMessage = errorMessage.substring(0, errorMessage.length-2);
-    errorMessage += '{"attributeName":"id", "message":"Must have course ID"}' + "]";
+    errorMessage += '{"attributeName":"course_ID", "message":"Must have course ID"}' + "]";
   }
   return errorMessage;
 }
@@ -55,11 +55,11 @@ router.get("/", function(req, res, next) {
   var sqlParams;
   var search = "%"+req.query.search+"%"; // Add SQL wildcards
   if (req.query.search == null) {
-    sqlQuery = "SELECT * FROM course LIMIT ? OFFSET ?";
+    sqlQuery = "SELECT * FROM Course LIMIT ? OFFSET ?";
     sqlParams = [limit, offset];
   }
   else {
-    sqlQuery = "SELECT * FROM course WHERE number LIKE ? OR name LIKE ? LIMIT ? OFFSET ?";
+    sqlQuery = "SELECT * FROM Course WHERE number LIKE ? OR name LIKE ? LIMIT ? OFFSET ?";
     sqlParams = [search, search, limit, offset];
   }
   
@@ -84,7 +84,7 @@ router.get("/", function(req, res, next) {
 /* GET a specific course */
 router.get("/:id", function(req, res, next) {
   var id = req.params.id;
-  res.locals.connection.query("SELECT * FROM course WHERE id=?", id, function(
+  res.locals.connection.query("SELECT * FROM Course WHERE course_ID=?", id, function(
     error,
     results,
     fields
@@ -113,7 +113,7 @@ router.put("/:id", function(req, res, next) {
     res.send(errorMessage);
   } else {
     res.locals.connection.query(
-      "UPDATE course SET ? WHERE id=?",
+      "UPDATE Course SET ? WHERE course_ID=?",
       [req.body, id],
       function(error, results) {
         if (error) {
@@ -145,7 +145,7 @@ router.post("/", function(req, res, next) {
     res.send(errorMessage);
   } else {
     res.locals.connection.query(
-      "INSERT INTO course SET ? ",
+      "INSERT INTO Course SET ? ",
       req.body,
       function(error, results) {
         if (error) {
@@ -169,7 +169,7 @@ router.post("/", function(req, res, next) {
 /* DELETE a course */
 router.delete("/:id", function(req, res, next) {
   var id = req.params.id;
-  res.locals.connection.query("DELETE FROM course WHERE id=?", id, function(
+  res.locals.connection.query("DELETE FROM Course WHERE course_ID=?", id, function(
     error,
     results
   ) {
