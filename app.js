@@ -8,6 +8,7 @@ var indexRouter = require("./routes/index");
 var advisorsRouter = require("./routes/advisors");
 var coursesRouter = require("./routes/courses");
 var studentsRouter = require("./routes/students");
+var plansRouter = require("./routes/plans");
 var cors = require("cors");
 
 // Database config file
@@ -53,6 +54,7 @@ app.use("/planapi/", indexRouter);
 app.use("/planapi/advisors", advisorsRouter);
 app.use("/planapi/courses", coursesRouter);
 app.use("/planapi/students", studentsRouter);
+app.use("/planapi/plans", plansRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
