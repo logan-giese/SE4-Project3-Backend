@@ -5,7 +5,9 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
 var indexRouter = require("./routes/index");
+var advisorsRouter = require("./routes/advisors");
 var coursesRouter = require("./routes/courses");
+var studentsRouter = require("./routes/students");
 var cors = require("cors");
 
 // Database config file
@@ -48,7 +50,9 @@ app.use(function(req, res, next) {
   next();
 });
 app.use("/planapi/", indexRouter);
+app.use("/planapi/advisors", advisorsRouter);
 app.use("/planapi/courses", coursesRouter);
+app.use("/planapi/students", studentsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
