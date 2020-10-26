@@ -6,27 +6,18 @@ function validate(advisor) {
   var errorMessage = "[";
 
   // Note: ID validation was removed because the database is set to auto-increment/auto-assign IDs
-  if (student.department == null || student.department.length == 0) {
+  if (advisor.advisor_last_name == null || advisor.advisor_last_name.length == 0) {
     if (errorMessage.length > 1) errorMessage += ",";
     errorMessage += '{"attributeName":"advisor_last_name", "message":"Must have last name"}';
   }
-  if (student.number == null || student.number.length == 0) {
+  if (advisor.advisor_first_name == null || advisor.advisor_first_name.length == 0) {
     if (errorMessage.length > 1) errorMessage += ",";
     errorMessage += '{"attributeName":"advisor_first_name", "message":"Must have first name"}';
   }
-  /* TODO - add more validation checks
-  if (advisor.name == null || advisor.name.length == 0) {
-    if (errorMessage.length > 1) errorMessage += ",";
-    errorMessage += '{"attributeName":"name", "message":"Must have name"}';
+  if (advisor.is_admin == null || advisor.is_admin.length == 0) {
+      // If no advisor admin permission, set it to the default
+      advisor.is_admin = "0";
   }
-  if (advisor.hours == null || advisor.hours.length == 0) {
-    if (errorMessage.length > 1) errorMessage += ",";
-    errorMessage += '{"attributeName":"hours", "message":"Must have hours"}';
-  }
-  if (advisor.level == null || advisor.level.length == 0) {
-      // If no advisor level, set it to the default
-      advisor.level = "0";
-  }*/
   errorMessage += "]";
   return errorMessage;
 }
@@ -34,7 +25,7 @@ function validate(advisor) {
 /* Validate for an update request specifically (check for ID) */
 function validateForUpdate(advisor) {
   var errorMessage = validate(advisor);
-  if (advisor.id == null || advisor.id.length == 0) {
+  if (advisor.advisor_id == null || advisor.advisor_id.length == 0) {
     errorMessage = errorMessage.substring(0, errorMessage.length-2);
     errorMessage += '{"attributeName":"advisor_ID", "message":"Must have advisor ID"}' + "]";
   }

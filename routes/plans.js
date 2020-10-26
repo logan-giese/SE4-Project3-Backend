@@ -6,27 +6,10 @@ function validate(plan) {
   var errorMessage = "[";
 
   // Note: ID validation was removed because the database is set to auto-increment/auto-assign IDs
-  /* TODO - delete validation checks because unnecessary?
-  if (student.department == null || student.department.length == 0) {
+  if (plan.plan_name == null || plan.plan_name.length == 0) {
     if (errorMessage.length > 1) errorMessage += ",";
-    errorMessage += '{"attributeName":"plan_last_name", "message":"Must have last name"}';
+    errorMessage += '{"attributeName":"plan_name", "message":"Must have plan name"}';
   }
-  if (student.number == null || student.number.length == 0) {
-    if (errorMessage.length > 1) errorMessage += ",";
-    errorMessage += '{"attributeName":"plan_first_name", "message":"Must have first name"}';
-  }
-  if (plan.name == null || plan.name.length == 0) {
-    if (errorMessage.length > 1) errorMessage += ",";
-    errorMessage += '{"attributeName":"name", "message":"Must have name"}';
-  }
-  if (plan.hours == null || plan.hours.length == 0) {
-    if (errorMessage.length > 1) errorMessage += ",";
-    errorMessage += '{"attributeName":"hours", "message":"Must have hours"}';
-  }
-  if (plan.level == null || plan.level.length == 0) {
-      // If no plan level, set it to the default
-      plan.level = "0";
-  }*/
   errorMessage += "]";
   return errorMessage;
 }
@@ -34,9 +17,9 @@ function validate(plan) {
 /* Validate for an update request specifically (check for ID) */
 function validateForUpdate(plan) {
   var errorMessage = validate(plan);
-  if (plan.id == null || plan.id.length == 0) {
+  if (plan.plan_id == null || plan.plan_id.length == 0) {
     errorMessage = errorMessage.substring(0, errorMessage.length-2);
-    errorMessage += '{"attributeName":"plan_ID", "message":"Must have plan ID"}' + "]";
+    errorMessage += '{"attributeName":"plan_id", "message":"Must have plan ID"}' + "]";
   }
   return errorMessage;
 }
@@ -82,10 +65,10 @@ router.get("/", function(req, res, next) {
   );
 });
 
-/* GET a specific plan */
+/* GET all courses for a specific plan */
 router.get("/:id", function(req, res, next) {
   var id = req.params.id;
-  res.locals.connection.query("SELECT * FROM DegreePlans WHERE plan_ID=?", id, function(
+  res.locals.connection.query("SELECT * FROM DegreePlans NATURAL JOIN courseplan WHERE plan_ID=?", id, function(
     error,
     results,
     fields

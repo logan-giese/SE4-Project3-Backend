@@ -6,27 +6,38 @@ function validate(student) {
   var errorMessage = "[";
 
   // Note: ID validation was removed because the database is set to auto-increment/auto-assign IDs
-  if (student.department == null || student.department.length == 0) {
+  if (student.student_last_name == null || student.student_last_name.length == 0) {
     if (errorMessage.length > 1) errorMessage += ",";
     errorMessage += '{"attributeName":"student_last_name", "message":"Must have last name"}';
   }
-  if (student.number == null || student.number.length == 0) {
+  if (student.student_first_name == null || student.student_first_name.length == 0) {
     if (errorMessage.length > 1) errorMessage += ",";
     errorMessage += '{"attributeName":"student_first_name", "message":"Must have first name"}';
   }
-  /* TODO - add more validation checks
-  if (student.name == null || student.name.length == 0) {
+  if (student.student_major == null || student.student_major.length == 0) {
     if (errorMessage.length > 1) errorMessage += ",";
-    errorMessage += '{"attributeName":"name", "message":"Must have name"}';
+    errorMessage += '{"attributeName":"student_major", "message":"Must have major"}';
   }
-  if (student.hours == null || student.hours.length == 0) {
+  if (student.student_gpa == null || student.student_gpa.length == 0) {
     if (errorMessage.length > 1) errorMessage += ",";
-    errorMessage += '{"attributeName":"hours", "message":"Must have hours"}';
+    errorMessage += '{"attributeName":"student_gpa", "message":"Must have GPA"}';
   }
-  if (student.level == null || student.level.length == 0) {
-      // If no student level, set it to the default
-      student.level = "0";
-  }*/
+  if (student.student_major == null || student.student_major.length == 0) {
+    if (errorMessage.length > 1) errorMessage += ",";
+    errorMessage += '{"attributeName":"student_major", "message":"Must have major"}';
+  }
+  if (student.student_expected_grad_date == null || student.student_expected_grad_date.length == 0) {
+    if (errorMessage.length > 1) errorMessage += ",";
+    errorMessage += '{"attributeName":"student_expected_grad_date", "message":"Must have expected grad date"}';
+  }
+  if (student.plan_id == null || student.plan_id.length == 0) {
+    if (errorMessage.length > 1) errorMessage += ",";
+    errorMessage += '{"attributeName":"plan_id", "message":"Must have plan ID"}';
+  }
+  if (student.advisor_id == null || student.advisor_id.length == 0) {
+    if (errorMessage.length > 1) errorMessage += ",";
+    errorMessage += '{"attributeName":"advisor_id", "message":"Must have advisor ID"}';
+  }
   errorMessage += "]";
   return errorMessage;
 }
@@ -34,8 +45,8 @@ function validate(student) {
 /* Validate for an update request specifically (check for ID) */
 function validateForUpdate(student) {
   var errorMessage = validate(student);
-  if (student.id == null || student.id.length == 0) {
-    errorMessage = errorMessage.substring(0, errorMessage.length-2);
+  if (student.student_id == null || student.student_id.length == 0) {
+    errorMessage = errorMessage.substring(0, errorMessage.length-2); // Remove previous end brace from validate()
     errorMessage += '{"attributeName":"student_ID", "message":"Must have student ID"}' + "]";
   }
   return errorMessage;
