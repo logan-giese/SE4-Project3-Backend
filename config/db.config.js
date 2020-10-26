@@ -7,6 +7,6 @@ var config = {
     // The database password
     password: "",
     // The database schema name
-    database: "courses"
+    database: "degreeplan"
 };
 module.exports = config;
