@@ -47,11 +47,11 @@ router.get("/", function(req, res, next) {
   var sqlParams;
   var search = "%"+req.query.search+"%"; // Add SQL wildcards
   if (req.query.search == null) {
-    sqlQuery = "SELECT * FROM Advisors LIMIT ? OFFSET ?";
+    sqlQuery = "SELECT * FROM advisors LIMIT ? OFFSET ?";
     sqlParams = [limit, offset];
   }
   else {
-    sqlQuery = "SELECT * FROM Advisors WHERE advisor_first_name LIKE ? OR advisor_last_name LIKE ? "+
+    sqlQuery = "SELECT * FROM advisors WHERE advisor_first_name LIKE ? OR advisor_last_name LIKE ? "+
         "LIMIT ? OFFSET ?";
     sqlParams = [search, search, limit, offset];
   }
@@ -77,7 +77,7 @@ router.get("/", function(req, res, next) {
 /* GET a specific advisor */
 router.get("/:id", function(req, res, next) {
   var id = req.params.id;
-  res.locals.connection.query("SELECT * FROM Advisors WHERE advisor_ID=?", id, function(
+  res.locals.connection.query("SELECT * FROM advisors WHERE advisor_ID=?", id, function(
     error,
     results,
     fields
@@ -106,7 +106,7 @@ router.put("/:id", function(req, res, next) {
     res.send(errorMessage);
   } else {
     res.locals.connection.query(
-      "UPDATE Advisors SET ? WHERE advisor_ID=?",
+      "UPDATE advisors SET ? WHERE advisor_ID=?",
       [req.body, id],
       function(error, results) {
         if (error) {
@@ -138,7 +138,7 @@ router.post("/", function(req, res, next) {
     res.send(errorMessage);
   } else {
     res.locals.connection.query(
-      "INSERT INTO Advisors SET ? ",
+      "INSERT INTO advisors SET ? ",
       req.body,
       function(error, results) {
         if (error) {
@@ -162,7 +162,7 @@ router.post("/", function(req, res, next) {
 /* DELETE an advisor */
 router.delete("/:id", function(req, res, next) {
   var id = req.params.id;
-  res.locals.connection.query("DELETE FROM Advisors WHERE advisor_ID=?", id, function(
+  res.locals.connection.query("DELETE FROM advisors WHERE advisor_ID=?", id, function(
     error,
     results
   ) {

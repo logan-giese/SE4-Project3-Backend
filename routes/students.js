@@ -67,11 +67,11 @@ router.get("/", function(req, res, next) {
   var sqlParams;
   var search = "%"+req.query.search+"%"; // Add SQL wildcards
   if (req.query.search == null) {
-    sqlQuery = "SELECT * FROM Students LIMIT ? OFFSET ?";
+    sqlQuery = "SELECT * FROM students LIMIT ? OFFSET ?";
     sqlParams = [limit, offset];
   }
   else {
-    sqlQuery = "SELECT * FROM Students WHERE student_last_name LIKE ? OR student_first_name LIKE ? "+
+    sqlQuery = "SELECT * FROM students WHERE student_last_name LIKE ? OR student_first_name LIKE ? "+
         "LIMIT ? OFFSET ?";
     sqlParams = [search, search, limit, offset];
   }
@@ -97,7 +97,7 @@ router.get("/", function(req, res, next) {
 /* GET a specific student */
 router.get("/:id", function(req, res, next) {
   var id = req.params.id;
-  res.locals.connection.query("SELECT * FROM Students WHERE student_ID=?", id, function(
+  res.locals.connection.query("SELECT * FROM students WHERE student_ID=?", id, function(
     error,
     results,
     fields
@@ -126,7 +126,7 @@ router.put("/:id", function(req, res, next) {
     res.send(errorMessage);
   } else {
     res.locals.connection.query(
-      "UPDATE Students SET ? WHERE student_ID=?",
+      "UPDATE students SET ? WHERE student_ID=?",
       [req.body, id],
       function(error, results) {
         if (error) {
@@ -158,7 +158,7 @@ router.post("/", function(req, res, next) {
     res.send(errorMessage);
   } else {
     res.locals.connection.query(
-      "INSERT INTO Students SET ? ",
+      "INSERT INTO students SET ? ",
       req.body,
       function(error, results) {
         if (error) {
@@ -182,7 +182,7 @@ router.post("/", function(req, res, next) {
 /* DELETE a student */
 router.delete("/:id", function(req, res, next) {
   var id = req.params.id;
-  res.locals.connection.query("DELETE FROM Students WHERE student_ID=?", id, function(
+  res.locals.connection.query("DELETE FROM students WHERE student_ID=?", id, function(
     error,
     results
   ) {
