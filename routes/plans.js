@@ -39,11 +39,11 @@ router.get("/", function(req, res, next) {
   var sqlParams;
   var search = "%"+req.query.search+"%"; // Add SQL wildcards
   if (req.query.search == null) {
-    sqlQuery = "SELECT * FROM DegreePlans LIMIT ? OFFSET ?";
+    sqlQuery = "SELECT * FROM degreeplans LIMIT ? OFFSET ?";
     sqlParams = [limit, offset];
   }
   else {
-    sqlQuery = "SELECT * FROM DegreePlans WHERE plan_name LIKE ? LIMIT ? OFFSET ?";
+    sqlQuery = "SELECT * FROM degreeplans WHERE plan_name LIKE ? LIMIT ? OFFSET ?";
     sqlParams = [search, limit, offset];
   }
   
@@ -68,7 +68,7 @@ router.get("/", function(req, res, next) {
 /* GET all courses for a specific plan */
 router.get("/:id", function(req, res, next) {
   var id = req.params.id;
-  res.locals.connection.query("SELECT * FROM DegreePlans NATURAL JOIN courseplan WHERE plan_ID=?", id, function(
+  res.locals.connection.query("SELECT * FROM degreeplans NATURAL JOIN courseplan WHERE plan_ID=?", id, function(
     error,
     results,
     fields
@@ -97,7 +97,7 @@ router.put("/:id", function(req, res, next) {
     res.send(errorMessage);
   } else {
     res.locals.connection.query(
-      "UPDATE DegreePlans SET ? WHERE plan_ID=?",
+      "UPDATE degreeplans SET ? WHERE plan_ID=?",
       [req.body, id],
       function(error, results) {
         if (error) {
@@ -129,7 +129,7 @@ router.post("/", function(req, res, next) {
     res.send(errorMessage);
   } else {
     res.locals.connection.query(
-      "INSERT INTO DegreePlans SET ? ",
+      "INSERT INTO degreeplans SET ? ",
       req.body,
       function(error, results) {
         if (error) {
@@ -153,7 +153,7 @@ router.post("/", function(req, res, next) {
 /* DELETE a plan */
 router.delete("/:id", function(req, res, next) {
   var id = req.params.id;
-  res.locals.connection.query("DELETE FROM DegreePlans WHERE plan_ID=?", id, function(
+  res.locals.connection.query("DELETE FROM degreeplans WHERE plan_ID=?", id, function(
     error,
     results
   ) {
