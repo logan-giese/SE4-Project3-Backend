@@ -5,14 +5,17 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
 var indexRouter = require("./routes/index");
+var advisorsRouter = require("./routes/advisors");
 var coursesRouter = require("./routes/courses");
+var studentsRouter = require("./routes/students");
+var plansRouter = require("./routes/plans");
 var cors = require("cors");
 
 // Database config file
 var config = require("./config/db.config");
 
 // Port to listen on
-process.env.PORT = 3001;
+process.env.PORT = 3002;
 
 var app = express();
 
@@ -47,8 +50,11 @@ app.use(function(req, res, next) {
   res.locals.connection.connect();
   next();
 });
-app.use("/courseapi/", indexRouter);
-app.use("/courseapi/courses", coursesRouter);
+app.use("/planapi/", indexRouter);
+app.use("/planapi/advisors", advisorsRouter);
+app.use("/planapi/courses", coursesRouter);
+app.use("/planapi/students", studentsRouter);
+app.use("/planapi/plans", plansRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
