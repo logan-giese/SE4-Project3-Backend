@@ -20,3 +20,4 @@ WHERE student_id = 1463678;
 UPDATE students
 SET student_major = 'Computer Science with Gaming and Animation'
 WHERE student_id = 1415454;
+select * from students;
