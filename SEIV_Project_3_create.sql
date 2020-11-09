@@ -42,7 +42,7 @@ CREATE TABLE `students` (
     `student_last_name` varchar(20) DEFAULT NULL,
     `student_first_name` varchar(20) DEFAULT NULL,
     `student_initial` varchar(1) DEFAULT NULL,
-    `student_major` varchar(30) DEFAULT NULL,
+    `student_major` varchar(50) DEFAULT NULL,
     `student_gpa` real(2,1) DEFAULT NULL,
     `student_hours_remaining` int DEFAULT NULL,
     `student_last_updated` timestamp NOT NULL,
