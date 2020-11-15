@@ -33,7 +33,7 @@ function validate(course) {
 /* Validate for an update request specifically (check for ID) */
 function validateForUpdate(course) {
   var errorMessage = validate(course);
-  if (course.id == null || course.id.length == 0) {
+  if (course.course_id == null || course.course_id.length == 0) {
     errorMessage = errorMessage.substring(0, errorMessage.length-2);
     errorMessage += '{"attributeName":"course_ID", "message":"Must have course ID"}' + "]";
   }
