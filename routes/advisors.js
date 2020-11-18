@@ -1,46 +1,38 @@
 var express = require("express");
 var router = express.Router();
 
-/* Validate a course object (used when creating a new course) */
-function validate(course) {
+/* Validate a advisor object (used when creating a new advisor) */
+function validate(advisor) {
   var errorMessage = "[";
 
   // Note: ID validation was removed because the database is set to auto-increment/auto-assign IDs
-  if (course.department == null || course.department.length == 0) {
+  if (advisor.advisor_last_name == null || advisor.advisor_last_name.length == 0) {
     if (errorMessage.length > 1) errorMessage += ",";
-    errorMessage += '{"attributeName":"department", "message":"Must have department"}';
+    errorMessage += '{"attributeName":"advisor_last_name", "message":"Must have last name"}';
   }
-  if (course.number == null || course.number.length == 0) {
+  if (advisor.advisor_first_name == null || advisor.advisor_first_name.length == 0) {
     if (errorMessage.length > 1) errorMessage += ",";
-    errorMessage += '{"attributeName":"number", "message":"Must have number"}';
+    errorMessage += '{"attributeName":"advisor_first_name", "message":"Must have first name"}';
   }
-  if (course.name == null || course.name.length == 0) {
-    if (errorMessage.length > 1) errorMessage += ",";
-    errorMessage += '{"attributeName":"name", "message":"Must have name"}';
-  }
-  if (course.hours == null || course.hours.length == 0) {
-    if (errorMessage.length > 1) errorMessage += ",";
-    errorMessage += '{"attributeName":"hours", "message":"Must have hours"}';
-  }
-  if (course.level == null || course.level.length == 0) {
-      // If no course level, set it to the default
-      course.level = "0";
+  if (advisor.is_admin == null || advisor.is_admin.length == 0) {
+      // If no advisor admin permission, set it to the default
+      advisor.is_admin = "0";
   }
   errorMessage += "]";
   return errorMessage;
 }
 
 /* Validate for an update request specifically (check for ID) */
-function validateForUpdate(course) {
-  var errorMessage = validate(course);
-  if (course.course_id == null || course.course_id.length == 0) {
+function validateForUpdate(advisor) {
+  var errorMessage = validate(advisor);
+  if (advisor.advisor_id == null || advisor.advisor_id.length == 0) {
     errorMessage = errorMessage.substring(0, errorMessage.length-2);
-    errorMessage += '{"attributeName":"course_ID", "message":"Must have course ID"}' + "]";
+    errorMessage += '{"attributeName":"advisor_ID", "message":"Must have advisor ID"}' + "]";
   }
   return errorMessage;
 }
 
-/* GET the full course listing */
+/* GET the full advisor listing */
 router.get("/", function(req, res, next) {
   // Get offset and limit from request url
   var offset;
@@ -55,11 +47,12 @@ router.get("/", function(req, res, next) {
   var sqlParams;
   var search = "%"+req.query.search+"%"; // Add SQL wildcards
   if (req.query.search == null) {
-    sqlQuery = "SELECT * FROM course LIMIT ? OFFSET ?";
+    sqlQuery = "SELECT * FROM advisors LIMIT ? OFFSET ?";
     sqlParams = [limit, offset];
   }
   else {
-    sqlQuery = "SELECT * FROM course WHERE number LIKE ? OR name LIKE ? LIMIT ? OFFSET ?";
+    sqlQuery = "SELECT * FROM advisors WHERE advisor_first_name LIKE ? OR advisor_last_name LIKE ? "+
+        "LIMIT ? OFFSET ?";
     sqlParams = [search, search, limit, offset];
   }
   
@@ -81,10 +74,10 @@ router.get("/", function(req, res, next) {
   );
 });
 
-/* GET a specific course */
+/* GET a specific advisor */
 router.get("/:id", function(req, res, next) {
   var id = req.params.id;
-  res.locals.connection.query("SELECT * FROM course WHERE course_ID=?", id, function(
+  res.locals.connection.query("SELECT * FROM advisors WHERE advisor_ID=?", id, function(
     error,
     results,
     fields
@@ -101,19 +94,19 @@ router.get("/:id", function(req, res, next) {
   });
 });
 
-/* PUT an updated course in the database */
+/* PUT an updated advisor in the database */
 router.put("/:id", function(req, res, next) {
   var id = req.params.id;
   console.log(req.body);
 
-  var course = req.body;
-  let errorMessage = validateForUpdate(course);
+  var advisor = req.body;
+  let errorMessage = validateForUpdate(advisor);
   if (errorMessage.length > 2) {
     res.status(406);
     res.send(errorMessage);
   } else {
     res.locals.connection.query(
-      "UPDATE course SET ? WHERE course_ID=?",
+      "UPDATE advisors SET ? WHERE advisor_ID=?",
       [req.body, id],
       function(error, results) {
         if (error) {
@@ -134,18 +127,18 @@ router.put("/:id", function(req, res, next) {
   }
 });
 
-/* POST a new course in the database */
+/* POST a new advisor in the database */
 router.post("/", function(req, res, next) {
   console.log(req.body);
 
-  var course = req.body;
-  let errorMessage = validate(course);
+  var advisor = req.body;
+  let errorMessage = validate(advisor);
   if (errorMessage.length > 2) {
     res.status(406);
     res.send(errorMessage);
   } else {
     res.locals.connection.query(
-      "INSERT INTO course SET ? ",
+      "INSERT INTO advisors SET ? ",
       req.body,
       function(error, results) {
         if (error) {
@@ -166,10 +159,10 @@ router.post("/", function(req, res, next) {
   }
 });
 
-/* DELETE a course */
+/* DELETE an advisor */
 router.delete("/:id", function(req, res, next) {
   var id = req.params.id;
-  res.locals.connection.query("DELETE FROM course WHERE course_ID=?", id, function(
+  res.locals.connection.query("DELETE FROM advisors WHERE advisor_ID=?", id, function(
     error,
     results
   ) {
